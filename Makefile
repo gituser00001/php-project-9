@@ -7,3 +7,6 @@ validate:
 
 lint:
 	composer exec --verbose phpcs -- --standard=PSR12 public
+
+localstart:
+	php -S localhost:8080 -t public public/index.php
