@@ -5,6 +5,10 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Slim\Factory\AppFactory;
 use DI\Container;
+use PageAnalyzer\Database\Repository;
+
+//$test = new Repository();
+//$t = $test->insertUrl('test12.com');
 
 $container = new Container();
 $container->set('renderer', function () {
