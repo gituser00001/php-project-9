@@ -3,6 +3,7 @@
 namespace PageAnalyzer\Database;
 
 use PageAnalyzer\Database\Connection;
+use Carbon\Carbon;
 
 class Repository
 {
@@ -16,9 +17,11 @@ class Repository
     public function insertUrl($name)
     {
         // подготовка запроса для добавления данных
-        $sql = 'INSERT INTO urls (name) VALUES (:name)';
+        $created_at = Carbon::now();
+        $sql = 'INSERT INTO urls (name, created_at) VALUES (:name, :created_at)';
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':name', $name);
+        $stmt->bindValue(':created_at', $created_at);
 
         $stmt->execute();
 
