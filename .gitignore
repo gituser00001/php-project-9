@@ -2,4 +2,4 @@
 /.vscode/
 /temp/
 src/Database/database.ini
-public\Nginx_1.21_vhost.conf
+public/Nginx_1.21_vhost.conf
