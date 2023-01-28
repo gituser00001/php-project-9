@@ -6,9 +6,11 @@ require __DIR__ . '/../vendor/autoload.php';
 use Slim\Factory\AppFactory;
 use DI\Container;
 use PageAnalyzer\Database\Repository;
+use PageAnalyzer\urlValidator;
+use Valitron\Validator;
 
-$sessionPath = __DIR__ . '/../temp/sessions/';
-session_save_path($sessionPath);
+//$sessionPath = __DIR__ . '/../temp/sessions/';
+//session_save_path($sessionPath);
 // Старт PHP сессии
 session_start();
 
@@ -46,11 +48,10 @@ $router = $app->getRouteCollector()->getRouteParser();
 $app->post('/urls', function ($request, $response) use ($router) {
     $url = $request->getParsedBodyParam('url');
     // Валидация url
+    $v = new UrlValidator;
+    $errors = $v->validate($url);
     $v = new Valitron\Validator($url);
-    $v->rule('url', 'name');
-    $v->validate();
-    $errors = $v->errors();
-    $params = ['url' => $url, 'errors' => 'noerros'];
+    $params = ['url' => $url, 'errors' => $errors];
     return $this->get('renderer')->render($response->withStatus(422), 'index.phtml', $params);
 })->setName('addUrl');
 
