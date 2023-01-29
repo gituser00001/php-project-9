@@ -28,4 +28,14 @@ class Repository
         // возврат полученного значения id
         return $this->db->lastInsertId();
     }
+
+    public function all()
+    {
+        $sql = 'SELECT * FROM urls';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll($this->db::FETCH_ASSOC);
+        return $result;
+
+    }
 }
