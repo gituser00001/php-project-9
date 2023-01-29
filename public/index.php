@@ -14,7 +14,7 @@ use Valitron\Validator;
 // Старт PHP сессии
 session_start();
 
-//$test = new Repository();
+$db = new Repository();
 //$t = $test->insertUrl('test12.com');
 
 // Установка зависимостей в контейнер
@@ -41,16 +41,32 @@ $app->get('/', function ($request, $response) {
     ];
     return $this->get('renderer')->render($response, 'index.phtml', $params);
 })->setName('homepage');
+
+// All Urls Page
+$app->get('/urls', function ($request, $response) use ($db) {
+
+    //$messages = $this->get('flash')->getMessages();
+    $urls = $db->all();
+    $params = ['url' => ''];
+    return $this->get('renderer')->render($response, 'urls.phtml', $params);
+})->setName('urls');
+
+
 // Получаем роутер – объект отвечающий за хранение и обработку  именнованых маршрутов
 $router = $app->getRouteCollector()->getRouteParser();
 
 // Добавление url
-$app->post('/urls', function ($request, $response) use ($router) {
+$app->post('/urls', function ($request, $response) use ($router, $db) {
     $url = $request->getParsedBodyParam('url');
     // Валидация url
     $v = new UrlValidator;
     $errors = $v->validate($url);
-    $v = new Valitron\Validator($url);
+    //Если ошибок нет, добавляем в БД и редирект на url
+    if (count($errors) === 0) {
+        $db->insertUrl($url['name']);
+        return $response->withRedirect($router->urlFor('urls'));
+    }
+
     $params = ['url' => $url, 'errors' => $errors];
     return $this->get('renderer')->render($response->withStatus(422), 'index.phtml', $params);
 })->setName('addUrl');
