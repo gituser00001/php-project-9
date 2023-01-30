@@ -38,4 +38,14 @@ class Repository
         return $result;
 
     }
+
+    public function findUrl($id)
+    {
+        $sql ='SELECT id, name, created_at FROM urls WHERE id = :id';
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        $result = $stmt->fetch($this->db::FETCH_ASSOC);
+        return $result;
+    }
 }
