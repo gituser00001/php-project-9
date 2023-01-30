@@ -47,7 +47,7 @@ $app->get('/urls', function ($request, $response) use ($db) {
 
     //$messages = $this->get('flash')->getMessages();
     $urls = $db->all();
-    $params = ['url' => ''];
+    $params = ['urls' => $urls];
     return $this->get('renderer')->render($response, 'urls.phtml', $params);
 })->setName('urls');
 
