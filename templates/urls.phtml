@@ -13,43 +13,50 @@
     <header class="flex-shrink-0">
         <nav class="navbar navbar-expand-md navbar-dark bg-dark px-3">
             <a class="navbar-brand" href="/">Анализатор страниц</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-    <a class="nav-link" href="/">Главная</a>
-</li>
+                        <a class="nav-link" href="/">Главная</a>
+                    </li>
 
                     <li class="nav-item">
-    <a class="nav-link active" href="/urls">Сайты</a>
-</li>
+                        <a class="nav-link active" href="/urls">Сайты</a>
+                    </li>
 
                 </ul>
             </div>
         </nav>
     </header>
 
-    
+
 
 
     <main class="flex-grow-1">
         <div class="container-lg mt-3">
-                      <h1>Сайты</h1>
-                    <div class="table-responsive">
-  <table class="table table-bordered table-hover text-nowrap" data-test="urls">
-    <tbody>
-      <tr>
-        <th>ID</th>
-        <th>Имя</th>
-        <th>Последняя проверка</th>
-        <th>Код ответа</th>
-      </tr>
-          </tbody>
-  </table>
-</div>
+            <h1>Сайты</h1>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-nowrap" data-test="urls">
+                    <tbody>
+                        <tr>
+                            <th>ID</th>
+                            <th>Имя</th>
+                            <th>Последняя проверка</th>
+                            <th>Код ответа</th>
+                        </tr>
+                        <?php foreach ($urls as $url) : ?>
+                            <tr>
+                                <td><?= $url['id'] ?></td>
+                                <td><a href="/urls/<?= $url['id'] ?>"><?= $url['name'] ?></a></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        <?php endforeach ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
     <footer class="border-top py-3 mt-5 flex-shrink-0">
@@ -60,4 +67,5 @@
         </div>
     </footer>
 </body>
+
 </html>
