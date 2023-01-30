@@ -51,12 +51,13 @@ $app->get('/urls', function ($request, $response) use ($db) {
     return $this->get('renderer')->render($response, 'urls.phtml', $params);
 })->setName('urls');
 
+// Id Url Page
 $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($db) {
 
-    //$messages = $this->get('flash')->getMessages();
+    $messages = $this->get('flash')->getMessages();
     $urlId = $args['id'];
     $url = $db->findUrl($urlId);
-    $params = ['url' => $url];
+    $params = ['url' => $url, 'messages' => $messages];
     return $this->get('renderer')->render($response, 'url.phtml', $params);
 })->setName('url');
 
@@ -64,7 +65,7 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($db) {
 // Получаем роутер – объект отвечающий за хранение и обработку  именнованых маршрутов
 $router = $app->getRouteCollector()->getRouteParser();
 
-// Добавление url
+// Add Url
 $app->post('/urls', function ($request, $response) use ($router, $db) {
     $url = $request->getParsedBodyParam('url');
     // Валидация url
@@ -72,8 +73,9 @@ $app->post('/urls', function ($request, $response) use ($router, $db) {
     $errors = $v->validate($url);
     //Если ошибок нет, добавляем в БД и редирект на url
     if (count($errors) === 0) {
-        $db->insertUrl($url['name']);
-        return $response->withRedirect($router->urlFor('urls'));
+        $id = $db->insertUrl($url['name']);
+        $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
+        return $response->withRedirect($router->urlFor('url', ['id' => $id]));
     }
 
     $params = ['url' => $url, 'errors' => $errors];
