@@ -51,6 +51,15 @@ $app->get('/urls', function ($request, $response) use ($db) {
     return $this->get('renderer')->render($response, 'urls.phtml', $params);
 })->setName('urls');
 
+$app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($db) {
+
+    //$messages = $this->get('flash')->getMessages();
+    $urlId = $args['id'];
+    $url = $db->findUrl($urlId);
+    $params = ['url' => $url];
+    return $this->get('renderer')->render($response, 'url.phtml', $params);
+})->setName('url');
+
 
 // Получаем роутер – объект отвечающий за хранение и обработку  именнованых маршрутов
 $router = $app->getRouteCollector()->getRouteParser();
