@@ -15,7 +15,6 @@ use Valitron\Validator;
 session_start();
 
 $db = new Repository();
-//$t = $test->insertUrl('test12.com');
 
 // Установка зависимостей в контейнер
 $container = new Container();
@@ -29,6 +28,7 @@ $container->set('flash', function () {
 $app = AppFactory::createFromContainer($container);
 $app->addErrorMiddleware(true, true, true);
 
+// Получаем роутер – объект отвечающий за хранение и обработку  именнованых маршрутов
 $router = $app->getRouteCollector()->getRouteParser();
 
 // Home Page
@@ -61,9 +61,6 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($db) {
     return $this->get('renderer')->render($response, 'url.phtml', $params);
 })->setName('url');
 
-
-// Получаем роутер – объект отвечающий за хранение и обработку  именнованых маршрутов
-$router = $app->getRouteCollector()->getRouteParser();
 
 // Add Url
 $app->post('/urls', function ($request, $response) use ($router, $db) {
