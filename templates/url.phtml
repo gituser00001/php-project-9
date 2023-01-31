@@ -31,8 +31,12 @@
     </nav>
   </header>
   <?php if (count($messages) > 0) : ?>
-    <div class="alert alert-success" role="alert">
-    <?= htmlspecialchars($messages['success'][0]) ?>
+    <div class="alert alert-<?= array_key_first($messages)?>" role="alert">
+    <?php foreach ($messages as $message) : ?>
+        <?php foreach ($message as $value) : ?>
+            <?= $value ?>
+        <?php endforeach ?>
+    <?php endforeach ?>
     </div>
   <?php endif ?>
 
@@ -77,6 +81,7 @@
           <?php //if(count($urlCheck > 0)) : ?>
             <tr>
               <td><?= $url['id']?></td>
+              <td><?= $url['status_code']?></td>
               <td></td>
               <td></td>
               <td></td>
