@@ -7,7 +7,8 @@ use Slim\Factory\AppFactory;
 use DI\Container;
 use PageAnalyzer\Database\Repository;
 use PageAnalyzer\urlValidator;
-use Valitron\Validator;
+use GuzzleHttp\Client;
+use GuzzleHttp\BadResponseException;
 
 //$sessionPath = __DIR__ . '/../temp/sessions/';
 //session_save_path($sessionPath);
@@ -45,16 +46,23 @@ $app->get('/', function ($request, $response) {
 // All Urls Page
 $app->get('/urls', function ($request, $response) use ($db) {
 
-    $urls = $db->all();
-    // Взять даты последней проверки url
-    $lastCheck = [];
-    foreach ($urls as $url) {
+    $urlsAll = $db->all();
+    // Взять дату и статуc последней проверки url
+    $urls = [];
+    foreach ($urlsAll as $url) {
         $id = $url['id'];
+        $name = $url['name'];
         $lastTime = $db->findLastCheck($id);
-        $created_at = $lastTime['created_at'] ?? null;
-        $lastCheck[$id] = $created_at;
+        $created_at = $lastTime['created_at'] ?? '';
+        $statusCode = $lastTime['status_code'] ?? '';
+        $urls[] = [
+            'id' => $id,
+            'name' => $name,
+            'status_code' => $statusCode,
+            'created_at' => $created_at
+        ];
     }
-    $params = ['urls' => $urls, 'lastCheck' => $lastCheck];
+    $params = ['urls' => $urls];
     return $this->get('renderer')->render($response, 'urls.phtml', $params);
 })->setName('urls');
 
@@ -88,7 +96,7 @@ $app->post('/urls', function ($request, $response) use ($router, $db) {
             $id = $db->insertUrl($url['name']);
             $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
         }
-            return $response->withRedirect($router->urlFor('url', ['id' => $id]));
+        return $response->withRedirect($router->urlFor('url', ['id' => $id]));
     }
 
     $params = ['url' => $url, 'errors' => $errors];
@@ -99,7 +107,27 @@ $app->post('/urls', function ($request, $response) use ($router, $db) {
 $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use ($router, $db) {
     $urlId = $args['id'];
     $urlData = $db->findUrl($urlId);
-    $urlCheckData = $db->addCheck($urlId);
+    $url = $urlData['name'];
+
+    $client = new Client();
+    try {
+        $res = $client->request('GET', $url, ['connect_timeout' => 3.14]);
+    } catch (GuzzleHttp\Exception\BadResponseException $e) { // Exception 4xx/5xx codes
+        $res = $e->getResponse();
+        $this->get('flash')->addMessage('warning', 'Проверка была выполнена успешно, но сервер ответил с ошибкой');
+        $statusCode = $res->getStatusCode();
+        $urlCheckData = $db->addCheck($urlId, $statusCode);
+        return $response->withRedirect($router->urlFor('url', ['id' => $urlId]));
+        //$responseBodyAsString = $res->getBody()->getContents();
+    } catch (GuzzleHttp\Exception\ConnectException $e) { // Exception when not connection
+        $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
+        return $response->withRedirect($router->urlFor('url', ['id' => $urlId]));
+    }
+
+    $statusCode = $res->getStatusCode();
+    $test = $res->getBody()->getContents();
+    $urlCheckData = $db->addCheck($urlId, $statusCode);
+    $this->get('flash')->addMessage('success', 'Страница успешно проверена');
 
     return $response->withRedirect($router->urlFor('url', ['id' => $urlId]));
 })->setName('check');
