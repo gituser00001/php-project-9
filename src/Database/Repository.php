@@ -48,4 +48,49 @@ class Repository
         $result = $stmt->fetch($this->db::FETCH_ASSOC);
         return $result;
     }
+
+    public function findId($name)
+    {
+        $sql ='SELECT id FROM urls WHERE name = :name';
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':name', $name);
+        $stmt->execute();
+        $result = $stmt->fetch($this->db::FETCH_ASSOC);
+        return $result;
+    }
+
+    public function addCheck($id)
+    {
+        // подготовка запроса для добавления данных
+        $created_at = Carbon::now();
+        $sql = 'INSERT INTO url_checks (url_id, created_at) VALUES (:url_id, :created_at)';
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':url_id', $id);
+        $stmt->bindValue(':created_at', $created_at);
+
+        $stmt->execute();
+
+        // возврат полученного значения id
+        return $this->db->lastInsertId();
+    }
+
+    public function findCheckUrl($id)
+    {
+        $sql ='SELECT id, created_at FROM url_checks WHERE url_id = :id';
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        $result = $stmt->fetchAll($this->db::FETCH_ASSOC);
+        return $result;
+    }
+
+    public function findLastCheck($id)
+    {
+        $sql ='SELECT created_at FROM url_checks WHERE url_id = :id ORDER BY id DESC LIMIT 1;';
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        $result = $stmt->fetch($this->db::FETCH_ASSOC);
+        return $result;
+    }
 }
