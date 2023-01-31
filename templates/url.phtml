@@ -73,6 +73,17 @@
             <th>description</th>
             <th>Дата создания</th>
           </tr>
+          <?php foreach ($urlCheck as $url) : ?>
+          <?php //if(count($urlCheck > 0)) : ?>
+            <tr>
+              <td><?= $url['id']?></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td><?= $url['created_at']?></td>
+            </tr>
+            <?php endforeach ?>
+            <?php //endif ?>
         </tbody>
       </table>
     </div>
