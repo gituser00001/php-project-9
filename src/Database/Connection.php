@@ -19,6 +19,8 @@ class Connection
     {
         // Чтение параметров
         $params = parse_url($_ENV['DATABASE_URL']);
+        //$params = 'postgresql://sal:vjkjnjd@localhost:5432/hexlet33';
+        //$params = parse_url($params);
         if ($params === 'false') {
             throw new \Exception('Ошибка чтения файла database.ini');
         }

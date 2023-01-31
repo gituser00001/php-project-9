@@ -18,8 +18,8 @@ use PageAnalyzer\UrlValidator;
 use GuzzleHttp\Client;
 use DiDom\Document;
 
-$sessionPath = __DIR__ . '/../temp/sessions/';
-session_save_path($sessionPath);
+//$sessionPath = __DIR__ . '/../temp/sessions/';
+//session_save_path($sessionPath);
 // Старт PHP сессии
 session_start();
 
