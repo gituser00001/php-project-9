@@ -8,7 +8,7 @@ use DI\Container;
 use PageAnalyzer\Database\Repository;
 use PageAnalyzer\urlValidator;
 use GuzzleHttp\Client;
-use GuzzleHttp\BadResponseException;
+use DiDom\Document;
 
 //$sessionPath = __DIR__ . '/../temp/sessions/';
 //session_save_path($sessionPath);
@@ -118,15 +118,25 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use
         $statusCode = $res->getStatusCode();
         $urlCheckData = $db->addCheck($urlId, $statusCode);
         return $response->withRedirect($router->urlFor('url', ['id' => $urlId]));
-        //$responseBodyAsString = $res->getBody()->getContents();
     } catch (GuzzleHttp\Exception\ConnectException $e) { // Exception when not connection
         $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться');
         return $response->withRedirect($router->urlFor('url', ['id' => $urlId]));
     }
 
     $statusCode = $res->getStatusCode();
-    $test = $res->getBody()->getContents();
-    $urlCheckData = $db->addCheck($urlId, $statusCode);
+
+    //Парсинг HTML тэгов
+    $html = $res->getBody()->getContents();
+    $document = new Document($html);
+    $title = $document->first('title::text()');
+    $h1 = $document->first('h1::text()') ?: '';
+    if ($document->has('meta[name=description]')) {
+        $description = $document->first('meta[name=description]')->getAttribute('content');
+    } else {
+        $description = '';
+    }
+    
+    $urlCheckData = $db->addCheck($urlId, $statusCode, $title, $h1, $description);
     $this->get('flash')->addMessage('success', 'Страница успешно проверена');
 
     return $response->withRedirect($router->urlFor('url', ['id' => $urlId]));
