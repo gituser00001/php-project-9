@@ -1,17 +1,25 @@
 <?php
 
-// Подключение автозагрузки через composer
-require __DIR__ . '/../vendor/autoload.php';
+// Путь который будет использован при глобальной установке пакета
+$autoloadPath1 = __DIR__ . '/../../../autoload.php';
+// Путь для локальной работы с проектом
+$autoloadPath2 = __DIR__ . '/../vendor/autoload.php';
+
+if (file_exists($autoloadPath1)) {
+    require_once $autoloadPath1;
+} else {
+    require_once $autoloadPath2;
+}
 
 use Slim\Factory\AppFactory;
 use DI\Container;
 use PageAnalyzer\Database\Repository;
-use PageAnalyzer\urlValidator;
+use PageAnalyzer\UrlValidator;
 use GuzzleHttp\Client;
 use DiDom\Document;
 
-//$sessionPath = __DIR__ . '/../temp/sessions/';
-//session_save_path($sessionPath);
+$sessionPath = __DIR__ . '/../temp/sessions/';
+session_save_path($sessionPath);
 // Старт PHP сессии
 session_start();
 
@@ -82,7 +90,7 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($db) {
 $app->post('/urls', function ($request, $response) use ($router, $db) {
     $url = $request->getParsedBodyParam('url');
     // Валидация url
-    $v = new UrlValidator();
+    $v = new urlValidator();
     $errors = $v->validate($url);
     //Если ошибок нет, проверяем на существование страницы в БД
     if (count($errors) === 0) {
