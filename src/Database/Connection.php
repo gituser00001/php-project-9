@@ -19,7 +19,6 @@ class Connection
     {
         // Чтение параметров
         $params = parse_url($_ENV['DATABASE_URL']);
-        $params = parse_url($params);
         if ($params === 'false') {
             throw new \Exception('Ошибка чтения файла database.ini');
         }
