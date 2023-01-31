@@ -82,11 +82,10 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($db) {
 $app->post('/urls', function ($request, $response) use ($router, $db) {
     $url = $request->getParsedBodyParam('url');
     // Валидация url
-    $v = new UrlValidator;
+    $v = new UrlValidator();
     $errors = $v->validate($url);
     //Если ошибок нет, проверяем на существование страницы в БД
     if (count($errors) === 0) {
-
         $existsUrl = $db->findId($url['name']);
 
         if ($existsUrl) {
@@ -135,7 +134,7 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use
     } else {
         $description = '';
     }
-    
+
     $urlCheckData = $db->addCheck($urlId, $statusCode, $title, $h1, $description);
     $this->get('flash')->addMessage('success', 'Страница успешно проверена');
 

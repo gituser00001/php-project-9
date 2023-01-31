@@ -36,12 +36,11 @@ class Repository
         $stmt->execute();
         $result = $stmt->fetchAll($this->db::FETCH_ASSOC);
         return $result;
-
     }
 
     public function findUrl($id)
     {
-        $sql ='SELECT id, name, created_at FROM urls WHERE id = :id';
+        $sql = 'SELECT id, name, created_at FROM urls WHERE id = :id';
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':id', $id);
         $stmt->execute();
@@ -51,7 +50,7 @@ class Repository
 
     public function findId($name)
     {
-        $sql ='SELECT id FROM urls WHERE name = :name';
+        $sql = 'SELECT id FROM urls WHERE name = :name';
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':name', $name);
         $stmt->execute();
@@ -81,7 +80,7 @@ class Repository
 
     public function findCheckUrl($id)
     {
-        $sql ='SELECT * FROM url_checks WHERE url_id = :id';
+        $sql = 'SELECT * FROM url_checks WHERE url_id = :id';
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':id', $id);
         $stmt->execute();
@@ -91,7 +90,7 @@ class Repository
 
     public function findLastCheck($id)
     {
-        $sql ='SELECT created_at, status_code FROM url_checks WHERE url_id = :id ORDER BY id DESC LIMIT 1;';
+        $sql = 'SELECT created_at, status_code FROM url_checks WHERE url_id = :id ORDER BY id DESC LIMIT 1;';
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':id', $id);
         $stmt->execute();
