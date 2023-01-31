@@ -45,9 +45,16 @@ $app->get('/', function ($request, $response) {
 // All Urls Page
 $app->get('/urls', function ($request, $response) use ($db) {
 
-    //$messages = $this->get('flash')->getMessages();
     $urls = $db->all();
-    $params = ['urls' => $urls];
+    // Взять даты последней проверки url
+    $lastCheck = [];
+    foreach ($urls as $url) {
+        $id = $url['id'];
+        $lastTime = $db->findLastCheck($id);
+        $created_at = $lastTime['created_at'] ?? null;
+        $lastCheck[$id] = $created_at;
+    }
+    $params = ['urls' => $urls, 'lastCheck' => $lastCheck];
     return $this->get('renderer')->render($response, 'urls.phtml', $params);
 })->setName('urls');
 
@@ -56,8 +63,9 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($db) {
 
     $messages = $this->get('flash')->getMessages();
     $urlId = $args['id'];
-    $url = $db->findUrl($urlId);
-    $params = ['url' => $url, 'messages' => $messages];
+    $urlData = $db->findUrl($urlId);
+    $urlCheckData = $db->findCheckUrl($urlId);
+    $params = ['url' => $urlData, 'urlCheck' => $urlCheckData, 'messages' => $messages];
     return $this->get('renderer')->render($response, 'url.phtml', $params);
 })->setName('url');
 
@@ -68,15 +76,32 @@ $app->post('/urls', function ($request, $response) use ($router, $db) {
     // Валидация url
     $v = new UrlValidator;
     $errors = $v->validate($url);
-    //Если ошибок нет, добавляем в БД и редирект на url
+    //Если ошибок нет, проверяем на существование страницы в БД
     if (count($errors) === 0) {
-        $id = $db->insertUrl($url['name']);
-        $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
-        return $response->withRedirect($router->urlFor('url', ['id' => $id]));
+
+        $existsUrl = $db->findId($url['name']);
+
+        if ($existsUrl) {
+            $id = $existsUrl['id'];
+            $this->get('flash')->addMessage('success', 'Страница уже существует');
+        } else { // добавляем новый url в бд
+            $id = $db->insertUrl($url['name']);
+            $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
+        }
+            return $response->withRedirect($router->urlFor('url', ['id' => $id]));
     }
 
     $params = ['url' => $url, 'errors' => $errors];
     return $this->get('renderer')->render($response->withStatus(422), 'index.phtml', $params);
 })->setName('addUrl');
+
+// Check Url
+$app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use ($router, $db) {
+    $urlId = $args['id'];
+    $urlData = $db->findUrl($urlId);
+    $urlCheckData = $db->addCheck($urlId);
+
+    return $response->withRedirect($router->urlFor('url', ['id' => $urlId]));
+})->setName('check');
 
 $app->run();
