@@ -2,20 +2,30 @@
 
 namespace PageAnalyzer\Database;
 
-use PageAnalyzer\Database\Connection;
 use PDO;
 use Carbon\Carbon;
 
 class Repository
 {
-    private object $db;
+    public PDO $db;
 
     public function __construct()
     {
-        $this->db = Connection::get()->connect();
+        $dbUrl = getenv('DATABASE_URL');
+        //$dbUrl = 'postgresql://sal:vjkjnjd@localhost:5432/hexlet33';
+
+        $databaseUrl = parse_url($dbUrl);
+        $username = $databaseUrl['user'];
+        $password = $databaseUrl['pass'];
+        $host = $databaseUrl['host'];
+        $port = $databaseUrl['port'];
+        $dbName = ltrim($databaseUrl['path'], '/');
+
+        $dsn = "pgsql:host=$host;port=$port;dbname=$dbName;user=$username;password=$password";
+        $this->db = new PDO($dsn);
     }
 
-    public function insertUrl(string $name): int
+    public function insertUrl(string $name): mixed
     {
         // подготовка запроса для добавления данных
         $created_at = Carbon::now();
