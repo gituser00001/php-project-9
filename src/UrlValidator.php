@@ -6,7 +6,7 @@ use Valitron\Validator;
 
 class UrlValidator
 {
-    public function validate(array $url)
+    public function validate(mixed $url): mixed
     {
         $errors = [];
         $v = new Validator($url);

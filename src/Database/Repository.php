@@ -7,14 +7,14 @@ use Carbon\Carbon;
 
 class Repository
 {
-    private $db;
+    private object $db;
 
     public function __construct()
     {
         $this->db = Connection::get()->connect();
     }
 
-    public function insertUrl($name)
+    public function insertUrl(string $name): int
     {
         // подготовка запроса для добавления данных
         $created_at = Carbon::now();
@@ -29,7 +29,7 @@ class Repository
         return $this->db->lastInsertId();
     }
 
-    public function all()
+    public function all(): mixed
     {
         $sql = 'SELECT * FROM urls';
         $stmt = $this->db->prepare($sql);
@@ -38,7 +38,7 @@ class Repository
         return $result;
     }
 
-    public function findUrl($id)
+    public function findUrl(int $id): mixed
     {
         $sql = 'SELECT id, name, created_at FROM urls WHERE id = :id';
         $stmt = $this->db->prepare($sql);
@@ -48,7 +48,7 @@ class Repository
         return $result;
     }
 
-    public function findId($name)
+    public function findId(string $name): mixed
     {
         $sql = 'SELECT id FROM urls WHERE name = :name';
         $stmt = $this->db->prepare($sql);
@@ -58,8 +58,13 @@ class Repository
         return $result;
     }
 
-    public function addCheck($id, $statusCode, $title = '', $h1 = '', $description = '')
-    {
+    public function addCheck(
+        mixed $id,
+        mixed $statusCode,
+        mixed $title = '',
+        mixed $h1 = '',
+        mixed $description = ''
+    ): mixed {
         // подготовка запроса для добавления данных
         $created_at = Carbon::now();
         $sql = 'INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
@@ -78,7 +83,7 @@ class Repository
         return $this->db->lastInsertId();
     }
 
-    public function findCheckUrl($id)
+    public function findCheckUrl(int $id): mixed
     {
         $sql = 'SELECT * FROM url_checks WHERE url_id = :id';
         $stmt = $this->db->prepare($sql);
@@ -88,7 +93,7 @@ class Repository
         return $result;
     }
 
-    public function findLastCheck($id)
+    public function findLastCheck(int $id): mixed
     {
         $sql = 'SELECT created_at, status_code FROM url_checks WHERE url_id = :id ORDER BY id DESC LIMIT 1;';
         $stmt = $this->db->prepare($sql);

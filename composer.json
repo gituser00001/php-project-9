@@ -25,5 +25,9 @@
         "vlucas/valitron": "^1.4",
         "guzzlehttp/guzzle": "^7.5",
         "imangazaliev/didom": "^2.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.9",
+        "phpstan/phpstan-phpunit": "^1.3"
     }
 }
