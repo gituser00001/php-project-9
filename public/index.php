@@ -137,10 +137,7 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use
     $document = new Document($html);
     $title = $document->first('title::text()');
     $h1 = $document->first('h1::text()') ?: '';
-    $description = $document->first('meta[name=description]');
-    if ($description !== null) {
-        $description = $description->content;
-    }
+    $description = $document->first('meta[name=description]') ?: '';
 
     $urlCheckData = $db->addCheck($urlId, $statusCode, $title, $h1, $description);
     $this->get('flash')->addMessage('success', 'Страница успешно проверена');
