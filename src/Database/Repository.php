@@ -3,6 +3,7 @@
 namespace PageAnalyzer\Database;
 
 use PageAnalyzer\Database\Connection;
+use PDO;
 use Carbon\Carbon;
 
 class Repository

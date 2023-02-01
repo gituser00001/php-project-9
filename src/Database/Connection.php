@@ -2,6 +2,8 @@
 
 namespace PageAnalyzer\Database;
 
+use PDO;
+
 final class Connection
 {
     /**
