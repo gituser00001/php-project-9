@@ -11,10 +11,9 @@ class Repository
 
     public function __construct()
     {
-        $dbUrl = getenv('DATABASE_URL');
         //$dbUrl = 'postgresql://sal:vjkjnjd@localhost:5432/hexlet33';
 
-        $databaseUrl = parse_url($dbUrl);
+        $databaseUrl = parse_url($_ENV['DATABASE_URL']);
         $username = $databaseUrl['user'];
         $password = $databaseUrl['pass'];
         $host = $databaseUrl['host'];
