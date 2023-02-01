@@ -11,14 +11,12 @@ class UrlValidator
         $errors = [];
         $v = new Validator($url);
         // Проверка на пустое значение
-        $v->rule('required', 'name');
-        if (!$v->validate()) {
-             return $errors = ['name' => 'URL не должен быть пустым'];
-        }
-        // Проверка на корректность url и макс. длину 255 символов
-        $v->rule('url', 'name')->rule('lengthMax', 'name', 255);
-        if (!$v->validate()) {
-            return $errors = ['name' => 'Некорректный URL'];
+        if (!$v->rule('required', 'name')->validate()) {
+             $errors = ['name' => 'URL не должен быть пустым'];
+        } elseif (!$v->rule('url', 'name')->rule('lengthMax', 'name', 255)->validate()) {
+            $errors = ['name' => 'Некорректный URL'];
+        } else {
+            $errors = [];
         }
 
         return $errors;
